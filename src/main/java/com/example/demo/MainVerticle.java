@@ -78,7 +78,9 @@ public class MainVerticle extends AbstractVerticle {
         EventBus eb = vertx.eventBus();
 
         eb.consumer("client-to-server", message -> {
-            System.out.println("hi");
+            System.out.println(message.body());
+
+            message.reply(message.body());
         });
 
         vertx.createHttpServer()
