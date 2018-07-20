@@ -56,12 +56,11 @@ public class MainVerticle extends AbstractVerticle {
         router.route().handler(CorsHandler.create("*").allowedHeaders(allowedHeaders).allowedMethods(allowedMethods));
 
         // you will need to allow outbound and inbound to allow eventbus communication.
-        BridgeOptions opts = new BridgeOptions()
-                .addOutboundPermitted(new PermittedOptions().setAddress("feed"));
+        BridgeOptions opts = new BridgeOptions();
         SockJSHandler ebHandler = SockJSHandler.create(vertx).bridge(opts);
         router.route("/eventbus/*").handler(ebHandler);
         opts.addInboundPermitted(new PermittedOptions().setAddress("client-to-server"));
-        opts.addOutboundPermitted(new PermittedOptions().setAddress("server-to-client"));
+        opts.addOutboundPermitted(new PermittedOptions().setAddress("client-to-server"));
         router.route().handler(StaticHandler.create());
 
         // Serve the static resources
@@ -77,11 +76,11 @@ public class MainVerticle extends AbstractVerticle {
 
         EventBus eb = vertx.eventBus();
 
-        eb.consumer("client-to-server", message -> {
-            System.out.println(message.body());
+        // eb.consumer("client-to-server", message -> {
+        //     System.out.println(message.body());
 
-            message.reply(message.body());
-        });
+        //     message.reply(message.body());
+        // });
 
         vertx.createHttpServer()
             .requestHandler(router::accept)
